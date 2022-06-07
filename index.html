@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport" />
+  <link rel="stylesheet" href="styles.css" />
+  <title>Cajero</title>
+</head>
+<body>
+  <!-- Background Image -->
+  <img src="assets/background-cajero.jpg" id="backgroundImage" class="background"/>
+  <!-- Company Logo -->
+  <img class="company-logo" id="logo" src="assets/logo.png">
+  <!-- Balance -->
+  <div id="balance" class="balance"></div>
+  <!-- Lights -->
+  <div id="redWarning" class="light light--red"></div>
+  <div id="yellowWarning" class="light light--yellow"></div>
+  <div id="purpleWarning" class="light light--purple"></div>
+  <div id="orangeWarning" class="light light--orange"></div>
+  <!-- Boton Ayuda -->
+  <div class="btn btn--ayuda" id="btnAyuda" onClick="helpActivated()"></div>
+  <!-- Botón Consulta de Saldo -->
+  <div class="btn btn--consulta-saldo" id="btnConsultaSaldo" onClick="consultaSaldoActivated()"></div>
+  <div class="btn btn--new-card" id="btnNewCard" onClick="newCardActivated()"></div>
+  <!-- Botón Credito/Debito -->
+  <div class="card main-button" id="btnTarjeta">
+    <span class="btnTarjetaTitle" id="btnTarjetaTitle"></span>
+    <img id="ilustrationCard" src="assets/card_brands.png"/>
+    <div class="card-btn" id="cardBtn" onClick="cardActivated()"></div>
+  </div>
+  <!-- Box Message -->
+  <div class="messageBox" id="messageBox"></div>
+  <div class="messageBox messageBox--error" id="messageBoxError"></div>
+  <div class="messageBox messageBox--new-card" id="messageBoxNewCard"></div>
+  <div class="messageBox messageBox--slide-card" id="messageBoxSlideCard"></div>
+  <div class="messageBox messageBox--balance" id="messageBoxBalance"></div>
+  <img id="messageBoxErrorLogo"
+    src="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iaXNvLTg4NTktMSI/Pg0KPCEtLSBHZW5lcmF0b3I6IEFkb2JlIElsbHVzdHJhdG9yIDE5LjAuMCwgU1ZHIEV4cG9ydCBQbHVnLUluIC4gU1ZHIFZlcnNpb246IDYuMDAgQnVpbGQgMCkgIC0tPg0KPHN2ZyB2ZXJzaW9uPSIxLjEiIGlkPSJDYXBhXzEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiIHg9IjBweCIgeT0iMHB4Ig0KCSB2aWV3Qm94PSIwIDAgNDU1LjExMSA0NTUuMTExIiBzdHlsZT0iZW5hYmxlLWJhY2tncm91bmQ6bmV3IDAgMCA0NTUuMTExIDQ1NS4xMTE7IiB4bWw6c3BhY2U9InByZXNlcnZlIj4NCjxjaXJjbGUgc3R5bGU9ImZpbGw6I0UyNEM0QjsiIGN4PSIyMjcuNTU2IiBjeT0iMjI3LjU1NiIgcj0iMjI3LjU1NiIvPg0KPHBhdGggc3R5bGU9ImZpbGw6I0QxNDAzRjsiIGQ9Ik00NTUuMTExLDIyNy41NTZjMCwxMjUuMTU2LTEwMi40LDIyNy41NTYtMjI3LjU1NiwyMjcuNTU2Yy03Mi41MzMsMC0xMzYuNTMzLTMyLjcxMS0xNzcuNzc4LTg1LjMzMw0KCWMzOC40LDMxLjI4OSw4OC4xNzgsNDkuNzc4LDE0Mi4yMjIsNDkuNzc4YzEyNS4xNTYsMCwyMjcuNTU2LTEwMi40LDIyNy41NTYtMjI3LjU1NmMwLTU0LjA0NC0xOC40ODktMTAzLjgyMi00OS43NzgtMTQyLjIyMg0KCUM0MjIuNCw5MS4wMjIsNDU1LjExMSwxNTUuMDIyLDQ1NS4xMTEsMjI3LjU1NnoiLz4NCjxwYXRoIHN0eWxlPSJmaWxsOiNGRkZGRkY7IiBkPSJNMzMxLjM3OCwzMzEuMzc4Yy04LjUzMyw4LjUzMy0yMi43NTYsOC41MzMtMzEuMjg5LDBsLTcyLjUzMy03Mi41MzNsLTcyLjUzMyw3Mi41MzMNCgljLTguNTMzLDguNTMzLTIyLjc1Niw4LjUzMy0zMS4yODksMGMtOC41MzMtOC41MzMtOC41MzMtMjIuNzU2LDAtMzEuMjg5bDcyLjUzMy03Mi41MzNsLTcyLjUzMy03Mi41MzMNCgljLTguNTMzLTguNTMzLTguNTMzLTIyLjc1NiwwLTMxLjI4OWM4LjUzMy04LjUzMywyMi43NTYtOC41MzMsMzEuMjg5LDBsNzIuNTMzLDcyLjUzM2w3Mi41MzMtNzIuNTMzDQoJYzguNTMzLTguNTMzLDIyLjc1Ni04LjUzMywzMS4yODksMGM4LjUzMyw4LjUzMyw4LjUzMywyMi43NTYsMCwzMS4yODlsLTcyLjUzMyw3Mi41MzNsNzIuNTMzLDcyLjUzMw0KCUMzMzkuOTExLDMwOC42MjIsMzM5LjkxMSwzMjIuODQ0LDMzMS4zNzgsMzMxLjM3OHoiLz4NCjxnPg0KPC9nPg0KPGc+DQo8L2c+DQo8Zz4NCjwvZz4NCjxnPg0KPC9nPg0KPGc+DQo8L2c+DQo8Zz4NCjwvZz4NCjxnPg0KPC9nPg0KPGc+DQo8L2c+DQo8Zz4NCjwvZz4NCjxnPg0KPC9nPg0KPGc+DQo8L2c+DQo8Zz4NCjwvZz4NCjxnPg0KPC9nPg0KPGc+DQo8L2c+DQo8Zz4NCjwvZz4NCjwvc3ZnPg0K" />
+  <img id="messageBoxSuccess"
+    src="data:image/svg+xml;base64,PHN2ZyBoZWlnaHQ9IjUxMnB0IiB2aWV3Qm94PSIwIDAgNTEyIDUxMiIgd2lkdGg9IjUxMnB0IiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxwYXRoIGQ9Im01MTIgNTguNjY3OTY5YzAtMzIuMzYzMjgxLTI2LjMwNDY4OC01OC42Njc5NjktNTguNjY3OTY5LTU4LjY2Nzk2OWgtMzk0LjY2NDA2MmMtMzIuMzYzMjgxIDAtNTguNjY3OTY5IDI2LjMwNDY4OC01OC42Njc5NjkgNTguNjY3OTY5djM5NC42NjQwNjJjMCAzMi4zNjMyODEgMjYuMzA0Njg4IDU4LjY2Nzk2OSA1OC42Njc5NjkgNTguNjY3OTY5aDM5NC42NjQwNjJjMzIuMzYzMjgxIDAgNTguNjY3OTY5LTI2LjMwNDY4OCA1OC42Njc5NjktNTguNjY3OTY5em0wIDAiIGZpbGw9IiM0Y2FmNTAiLz48cGF0aCBkPSJtMzg1Ljc1IDE3MS41ODU5MzhjOC4zMzk4NDQgOC4zMzk4NDMgOC4zMzk4NDQgMjEuODIwMzEyIDAgMzAuMTY0MDYybC0xMzguNjY3OTY5IDEzOC42NjQwNjJjLTQuMTYwMTU2IDQuMTYwMTU3LTkuNjIxMDkzIDYuMjUzOTA3LTE1LjA4MjAzMSA2LjI1MzkwN3MtMTAuOTIxODc1LTIuMDkzNzUtMTUuMDgyMDMxLTYuMjUzOTA3bC02OS4zMzIwMzEtNjkuMzMyMDMxYy04LjM0Mzc1LTguMzM5ODQzLTguMzQzNzUtMjEuODI0MjE5IDAtMzAuMTY0MDYyIDguMzM5ODQzLTguMzQzNzUgMjEuODIwMzEyLTguMzQzNzUgMzAuMTY0MDYyIDBsNTQuMjUgNTQuMjUgMTIzLjU4NTkzOC0xMjMuNTgyMDMxYzguMzM5ODQzLTguMzQzNzUgMjEuODIwMzEyLTguMzQzNzUgMzAuMTY0MDYyIDB6bTAgMCIgZmlsbD0iI2ZhZmFmYSIvPjwvc3ZnPg==" />
+  <!-- Fin Transaccion -->
+  <div id="finTransaccionError" class="transaccion-box--error">
+    <img id="finTransaccionLogoError" class="transaccion-logo--error"
+      src="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iaXNvLTg4NTktMSI/Pg0KPCEtLSBHZW5lcmF0b3I6IEFkb2JlIElsbHVzdHJhdG9yIDE5LjAuMCwgU1ZHIEV4cG9ydCBQbHVnLUluIC4gU1ZHIFZlcnNpb246IDYuMDAgQnVpbGQgMCkgIC0tPg0KPHN2ZyB2ZXJzaW9uPSIxLjEiIGlkPSJDYXBhXzEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiIHg9IjBweCIgeT0iMHB4Ig0KCSB2aWV3Qm94PSIwIDAgNDU1LjExMSA0NTUuMTExIiBzdHlsZT0iZW5hYmxlLWJhY2tncm91bmQ6bmV3IDAgMCA0NTUuMTExIDQ1NS4xMTE7IiB4bWw6c3BhY2U9InByZXNlcnZlIj4NCjxjaXJjbGUgc3R5bGU9ImZpbGw6I0UyNEM0QjsiIGN4PSIyMjcuNTU2IiBjeT0iMjI3LjU1NiIgcj0iMjI3LjU1NiIvPg0KPHBhdGggc3R5bGU9ImZpbGw6I0QxNDAzRjsiIGQ9Ik00NTUuMTExLDIyNy41NTZjMCwxMjUuMTU2LTEwMi40LDIyNy41NTYtMjI3LjU1NiwyMjcuNTU2Yy03Mi41MzMsMC0xMzYuNTMzLTMyLjcxMS0xNzcuNzc4LTg1LjMzMw0KCWMzOC40LDMxLjI4OSw4OC4xNzgsNDkuNzc4LDE0Mi4yMjIsNDkuNzc4YzEyNS4xNTYsMCwyMjcuNTU2LTEwMi40LDIyNy41NTYtMjI3LjU1NmMwLTU0LjA0NC0xOC40ODktMTAzLjgyMi00OS43NzgtMTQyLjIyMg0KCUM0MjIuNCw5MS4wMjIsNDU1LjExMSwxNTUuMDIyLDQ1NS4xMTEsMjI3LjU1NnoiLz4NCjxwYXRoIHN0eWxlPSJmaWxsOiNGRkZGRkY7IiBkPSJNMzMxLjM3OCwzMzEuMzc4Yy04LjUzMyw4LjUzMy0yMi43NTYsOC41MzMtMzEuMjg5LDBsLTcyLjUzMy03Mi41MzNsLTcyLjUzMyw3Mi41MzMNCgljLTguNTMzLDguNTMzLTIyLjc1Niw4LjUzMy0zMS4yODksMGMtOC41MzMtOC41MzMtOC41MzMtMjIuNzU2LDAtMzEuMjg5bDcyLjUzMy03Mi41MzNsLTcyLjUzMy03Mi41MzMNCgljLTguNTMzLTguNTMzLTguNTMzLTIyLjc1NiwwLTMxLjI4OWM4LjUzMy04LjUzMywyMi43NTYtOC41MzMsMzEuMjg5LDBsNzIuNTMzLDcyLjUzM2w3Mi41MzMtNzIuNTMzDQoJYzguNTMzLTguNTMzLDIyLjc1Ni04LjUzMywzMS4yODksMGM4LjUzMyw4LjUzMyw4LjUzMywyMi43NTYsMCwzMS4yODlsLTcyLjUzMyw3Mi41MzNsNzIuNTMzLDcyLjUzMw0KCUMzMzkuOTExLDMwOC42MjIsMzM5LjkxMSwzMjIuODQ0LDMzMS4zNzgsMzMxLjM3OHoiLz4NCjxnPg0KPC9nPg0KPGc+DQo8L2c+DQo8Zz4NCjwvZz4NCjxnPg0KPC9nPg0KPGc+DQo8L2c+DQo8Zz4NCjwvZz4NCjxnPg0KPC9nPg0KPGc+DQo8L2c+DQo8Zz4NCjwvZz4NCjxnPg0KPC9nPg0KPGc+DQo8L2c+DQo8Zz4NCjwvZz4NCjxnPg0KPC9nPg0KPGc+DQo8L2c+DQo8Zz4NCjwvZz4NCjwvc3ZnPg0K" />
+    <p class="message--error" id="finTransaccionErrorMessage">
+  </div>
+  <div id="finTransaccionSuccess" class="transaccion-box--success">
+    <img id="finTransaccionLogoSuccess" class="transaccion-logo--success"
+      src="data:image/svg+xml;base64,PHN2ZyBoZWlnaHQ9IjUxMnB0IiB2aWV3Qm94PSIwIDAgNTEyIDUxMiIgd2lkdGg9IjUxMnB0IiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxwYXRoIGQ9Im01MTIgNTguNjY3OTY5YzAtMzIuMzYzMjgxLTI2LjMwNDY4OC01OC42Njc5NjktNTguNjY3OTY5LTU4LjY2Nzk2OWgtMzk0LjY2NDA2MmMtMzIuMzYzMjgxIDAtNTguNjY3OTY5IDI2LjMwNDY4OC01OC42Njc5NjkgNTguNjY3OTY5djM5NC42NjQwNjJjMCAzMi4zNjMyODEgMjYuMzA0Njg4IDU4LjY2Nzk2OSA1OC42Njc5NjkgNTguNjY3OTY5aDM5NC42NjQwNjJjMzIuMzYzMjgxIDAgNTguNjY3OTY5LTI2LjMwNDY4OCA1OC42Njc5NjktNTguNjY3OTY5em0wIDAiIGZpbGw9IiM0Y2FmNTAiLz48cGF0aCBkPSJtMzg1Ljc1IDE3MS41ODU5MzhjOC4zMzk4NDQgOC4zMzk4NDMgOC4zMzk4NDQgMjEuODIwMzEyIDAgMzAuMTY0MDYybC0xMzguNjY3OTY5IDEzOC42NjQwNjJjLTQuMTYwMTU2IDQuMTYwMTU3LTkuNjIxMDkzIDYuMjUzOTA3LTE1LjA4MjAzMSA2LjI1MzkwN3MtMTAuOTIxODc1LTIuMDkzNzUtMTUuMDgyMDMxLTYuMjUzOTA3bC02OS4zMzIwMzEtNjkuMzMyMDMxYy04LjM0Mzc1LTguMzM5ODQzLTguMzQzNzUtMjEuODI0MjE5IDAtMzAuMTY0MDYyIDguMzM5ODQzLTguMzQzNzUgMjEuODIwMzEyLTguMzQzNzUgMzAuMTY0MDYyIDBsNTQuMjUgNTQuMjUgMTIzLjU4NTkzOC0xMjMuNTgyMDMxYzguMzM5ODQzLTguMzQzNzUgMjEuODIwMzEyLTguMzQzNzUgMzAuMTY0MDYyIDB6bTAgMCIgZmlsbD0iI2ZhZmFmYSIvPjwvc3ZnPg==" />
+    <p class="message--success" id="finTransaccionSuccessMessage"></p>
+    <p class="message--charged">
+      <span id="chargedLabel"></span>
+      <span id="charged"></span>
+    </p>
+    <div class="message--promo">
+      <p class="promoWonLabel" id="promoWonLabel"></p>
+      <p id="promoWon"></p>
+    </div>
+  </div>
+  <!-- Promo 1 -->
+  <div id="promociones">
+    <div class="promo promo--1" id="promo1">
+      <p class="promo--text" id="promo1Title"></p>
+      <p id="promoTitle1" class="title"></p>
+      <p class="charging">
+        <span id="promo1Charging"></span>
+        <span class="charging--price" id="promoPrice1"></span>
+      </p>
+      <p class="receive" id="receivePTag">
+        <span id="promo1Receive"></span>
+        <span class="receive--item">
+          <ul class="receive--list">
+            <li>
+              <span id="promo1Item1"></span>
+              <span class="receive--list--value" id="receive1-1"></span>
+            </li>
+            <li>
+              <span id="promo1Item2"></span>
+              <span class="receive--list--value" id="receive2-1"></span>
+            </li>
+            <li>
+              <span id="promo1Item3"></span>
+              <span class="receive--list--value" id="receive3-1"></span>
+            </li>
+          </ul>
+        </span>
+      </p>
+    </div>
+    <div class="footer footer--1" id="footer1">
+      <p class="needed">
+        <span id="promo1Needed"></span>
+        <span id="moneyNeeded1"></span>
+      </p>
+    </div>
+    <div class="promo1-activada" id="promo1Activada">
+      <span id="promo1Activated"></span>
+    </div>
+    <img id="promoActivatedImg1"/>
+    <!-- Promo 2 -->
+    <div class="promo promo--2" id="promo2">
+      <p class="promo--text" id="promo2Title"></p>
+      <p id="promoTitle2" class="title"></p>
+      <p class="charging">
+        <span id="promo2Charging"></span>
+        <span class="charging--price" id="promoPrice2"></span>
+      </p>
+      <p class="receive" id="receivePTag">
+        <span id="promo2Receive"></span>
+        <span class="receive--item">
+          <ul class="receive--list">
+            <li>
+              <span id="promo2Item1"></span>
+              <span class="receive--list--value" id="receive1-2"></span>
+            </li>
+            <li>
+              <span id="promo2Item2"></span>
+              <span class="receive--list--value" id="receive2-2"></span>
+            </li>
+            <li>
+              <span id="promo2Item3"></span>
+              <span class="receive--list--value" id="receive3-2"></span>
+            </li>
+          </ul>
+        </span>
+      </p>
+    </div>
+    <div class="footer footer--2" id="footer2">
+      <p class="needed">
+        <span id="promo2Needed"></span>
+        <span id="moneyNeeded2"></span>
+      </p>
+    </div>
+    <div class="promo2-activada" id="promo2Activada">
+      <span id="promo2Activated"></span>
+    </div>
+    <img id="promoActivatedImg2"/>
+    <!-- Promo 3 -->
+    <div class="promo promo--3" id="promo3">
+      <p class="promo--text" id="promo3Title"></p>
+      <p id="promoTitle3" class="title"></p>
+      <p class="charging">
+        <span id="promo3Charging"></span>
+        <span class="charging--price" id="promoPrice3"></span>
+      </p>
+      <p class="receive" id="receivePTag">
+        <span id="promo3Receive"></span>
+        <span class="receive--item">
+          <ul class="receive--list">
+            <li>
+              <span id="promo3Item1"></span>
+              <span class="receive--list--value" id="receive1-3"></span>
+            </li>
+            <li>
+              <span id="promo3Item2"></span>
+              <span class="receive--list--value" id="receive2-3"></span>
+            </li>
+            <li>
+              <span id="promo3Item3"></span>
+              <span class="receive--list--value" id="receive3-3"></span>
+            </li>
+          </ul>
+        </span>
+      </p>
+    </div>
+    <div class="footer footer--3" id="footer3">
+      <p class="needed">
+        <span id="promo3Needed"></span>
+        <span id="moneyNeeded3"></span>
+      </p>
+    </div>
+    <div class="promo3-activada" id="promo3Activada">
+      <span id="promo3Activated"></span>
+    </div>
+    <img id="promoActivatedImg3"/>
+    <!-- Promo 4 -->
+    <div class="promo promo--4" id="promo4">
+      <p class="promo--text" id="promo4Title"></p>
+      <p id="promoTitle4" class="title"></p>
+      <p class="charging">
+        <span id="promo4Charging"></span>
+        <span class="charging--price" id="promoPrice4"></span>
+      </p>
+      <p class="receive" id="receivePTag">
+        <span id="promo4Receive"></span>
+        <span class="receive--item">
+          <ul class="receive--list">
+            <li>
+              <span id="promo4Item1"></span>
+              <span class="receive--list--value" id="receive1-4"></span>
+            </li>
+            <li>
+              <span id="promo4Item2"></span>
+              <span class="receive--list--value" id="receive2-4"></span>
+            </li>
+            <li id="ticketPromo">
+              <span id="promo4Item3"></span>
+              <span class="receive--list--value" id="receive3-4"></span>
+            </li>
+          </ul>
+        </span>
+      </p>
+    </div>
+    <div class="footer footer--4" id="footer4">
+      <p class="needed">
+        <span id="promo4Needed"></span>
+        <span id="moneyNeeded4"></span>
+      </p>
+    </div>
+    <div class="promo4-activada" id="promo4Activada">
+      <span id="promo4Activated"></span>
+    </div>
+    <img id="promoActivatedImg4"/>
+    <!-- Promo 5 -->
+    <div class="promo promo--5" id="promo5">
+      <p class="promo--text" id="promo5Title"></p>
+      <p id="promoTitle5" class="title"></p>
+      <p class="charging">
+        <span id="promo5Charging"></span>
+        <span class="charging--price" id="promoPrice5"></span>
+      </p>
+      <p class="receive" id="receivePTag">
+        <span id="promo5Receive"></span>
+        <span class="receive--item">
+          <ul class="receive--list">
+            <li>
+              <span id="promo5Item1"></span>
+              <span class="receive--list--value" id="receive1-5"></span>
+            </li>
+            <li>
+              <span id="promo5Item2"></span>
+              <span class="receive--list--value" id="receive2-5"></span>
+            </li>
+            <li>
+              <span id="promo5Item3"></span>
+              <span class="receive--list--value" id="receive3-5"></span>
+            </li>
+          </ul>
+        </span>
+      </p>
+    </div>
+    <div class="footer footer--5" id="footer5">
+      <p class="needed">
+        <span id="promo5Needed"></span>
+        <span id="moneyNeeded5"></span>
+      </p>
+    </div>
+    <div class="promo5-activada" id="promo5Activada"> 
+      <span id="promo5Activated"></span>
+    </div>
+  </div>
+  <img id="promoActivatedImg5"/>
+  <!--CHARGE INFORMATION SCREEN-->
+  <div class="charge-info" id="chargeInfo">
+    <div class="charge-info__header">
+      <div class="charge-info__title">Datos:</div>
+      <div class="charge-info__subtitle">Tarjeta: &nbsp;&nbsp;&nbsp;<span id="card-number"></span></div>
+    </div>
+    <div class="charge-info__saldos">
+      <div class="saldo-container">
+        <span class="saldo-label">Creditos:</span>
+        <span id="credits"></span>
+      </div>
+      <div class="saldo-container">
+        <span class="saldo-label">Bonus:</span>
+        <span id="bonus"></span>
+      </div>
+      <div class="saldo-container">
+        <img class="ticket-img" src="assets/ticket-blue.png" alt="tiket">
+        <span class="saldo-label">Tickets:</span>
+        <span id="Tks"></span>
+      </div>
+      <div class="saldo-container">
+        <span class="saldo-label">Quantity:</span>
+        <span id=Qty></span>
+      </div>
+    </div>
+  </div>
+  <div class="back-btn-charge" id="btnBack" onClick="backHome()"></div>
+  <div class="movimientos-table" id="chargeInfoTable" style="color:transparent"></div>
+  <div class="charge-table-info-footer" id="tableFooter"></div>
+      <!--CHARGE INFORMATION WAITING SCREEN (only in consulta de saldo)-->
+      <div class="charge-info-waiting" id="checkBalanceWait"></div>
+      <div id="progressBar" class="progress-bar">
+        <span id="progressBarFill" class="progress-bar-fill" style="width: 1%"></span>
+      </div>
+    <!--CHARGE INFORMATION STANDBY SCREEN (only in consulta de saldo)-->
+    <div class="charge-info-stand-by" id="consultaStandBy"></div>
+    <div class="arrow-down" id="arrowDown">
+      <img class="triangle" src="assets/arrowDown.png" alt="Arrow Down">
+    </div>
+      <!--SETUP SCREEN (only in consulta de saldo)-->
+      <div class="check-balance-setup" id="checkBalanceSetup">
+        <h2>SETUP</h2>
+
+        <form id="setupForm">
+          <label id="ipMasterTag" for="ipMasterInput"><h3>IP MASTER</h3></label>
+          <input autofocus placeholder="255.255.255.255" onfocus="radioFocus('ipMasterTag')" onfocusout="radioFocusOut('ipMasterTag')" type="text" name="ipMaster" id="ipMasterInput" maxlength="15">
+
+          <h3 id="wifiTag">WIFI CONFIG</h3>
+          <label for="ssidInput">SSID</label>
+          <input onfocus="radioFocus('wifiTag')" onfocusout="radioFocusOut('wifiTag')" type="text" name="ssid" id="ssidInput" maxlength="40">
+
+          <label for="passwordInput">PASSWORD</label>
+          <input onfocus="radioFocus('wifiTag')" onfocusout="radioFocusOut('wifiTag')" type="text" name="passwod" id="passwordInput" maxlength="30">
+
+          <h3 id="orientationTag">ORIENTATION</h3>
+          <div class="radio-orientation-group">
+            <div class="radio-row">
+            <input onfocus="radioFocus('orientationTag')" onfocusout="radioFocusOut('orientationTag')" class="radio-orientation" type="radio" name="orientation" id="radio-vertical">
+            <label class="radio-label vertical" for="radio-vertical">VERTICAL</label></div>
+            <div class="radio-row">
+            <input onfocus="radioFocus('orientationTag')" onfocusout="radioFocusOut('orientationTag')" class="radio-orientation" type="radio" name="orientation" id="radio-horizontal">
+            <label class="radio-label" for="radio-horizontal">HORIZONTAL</label></div>
+          </div>
+
+          <div class="buton-box">
+            
+            <button tabindex="-1" class="btn-setup btn-setup-save" onclick="setupSubmit(event)"><span class="btn-text">SAVE <img src="assets/icons-enter.png" alt="" style="width: 75px;"></span> </button>
+          <button tabindex="-1" class="btn-setup btn-setup-cancel" onclick="cancelSetup(event)"><span class="btn-text">CANCEL <img src="assets/icons-esc.png" alt="" style="width: 75px;"></span> </button>
+
+        </div>
+        </form>
+        <p class="invalid-fields-msg" id="invalidTag">INVALID FIELDS</p>
+      </div>
+  <!-- Ilustraciones parte inferior-->
+  <div id="ilustraciones">
+    <img src="assets/insertCoin.png" alt="insert coin image" class="insert-img coin-img" />
+    <img src="assets/insertBill.png" alt="insert bill image" class="insert-img bill-img" />
+  </div>
+  <div id="nfc" class="action__item nfc">
+    <img class="action__item__img"
+      src="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiA/PjwhRE9DVFlQRSBzdmcgIFBVQkxJQyAnLS8vVzNDLy9EVEQgU1ZHIDEuMS8vRU4nICAnaHR0cDovL3d3dy53My5vcmcvR3JhcGhpY3MvU1ZHLzEuMS9EVEQvc3ZnMTEuZHRkJz48c3ZnIGVuYWJsZS1iYWNrZ3JvdW5kPSJuZXcgMCAwIDI2IDI2IiBpZD0i0KHQu9C+0LlfMSIgdmVyc2lvbj0iMS4xIiB2aWV3Qm94PSIwIDAgMjYgMjYiIHhtbDpzcGFjZT0icHJlc2VydmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiPjxnPjxwYXRoIGQ9Ik0xMy40NDgyNDIyLDMuNDY5NzI2NmMtMC4yOTM5NDUzLTAuMjkzOTQ1My0wLjc2ODU1NDctMC4yOTE5OTIyLTEuMDYwNTQ2OSwwICAgYy0wLjI5Mjk2ODgsMC4yOTI5Njg4LTAuMjkyOTY4OCwwLjc2NzU3ODEsMCwxLjA2MDU0NjlDMTQuNjUzMzIwMyw2Ljc5NDkyMTksMTUuOTAxMzY3Miw5LjgwMjczNDQsMTUuOTAxMzY3MiwxMyAgIHMtMS4yNDgwNDY5LDYuMjA1MDc4MS0zLjUxMzY3MTksOC40Njk3MjY2Yy0wLjI5Mjk2ODgsMC4yOTI5Njg4LTAuMjkyOTY4OCwwLjc2NzU3ODEsMCwxLjA2MDU0NjkgICBDMTIuNTM0MTc5NywyMi42NzY3NTc4LDEyLjcyNTU4NTksMjIuNzUsMTIuOTE3OTY4OCwyMi43NWMwLjE5MTQwNjMsMCwwLjM4Mzc4OTEtMC4wNzMyNDIyLDAuNTMwMjczNC0wLjIxOTcyNjYgICBjMi41NDg4MjgxLTIuNTQ3ODUxNiwzLjk1MzEyNS01LjkzMTY0MDYsMy45NTMxMjUtOS41MzAyNzM0UzE1Ljk5NzA3MDMsNi4wMTc1NzgxLDEzLjQ0ODI0MjIsMy40Njk3MjY2eiIgZmlsbD0iIzFEMUQxQiIvPjxwYXRoIGQ9Ik03Ljg4NDc2NTYsNS43MTk3MjY2Yy0wLjI5Mjk2ODgsMC4yOTI5Njg4LTAuMjkyOTY4OCwwLjc2NzU3ODEsMCwxLjA2MDU0NjkgICBDOS41NDg4MjgxLDguNDQzMzU5NCwxMC40NjQ4NDM4LDEwLjY1MTM2NzIsMTAuNDY0ODQzOCwxM2MwLDIuMzQ3NjU2My0wLjkxNjAxNTYsNC41NTY2NDA2LTIuNTgwMDc4MSw2LjIxOTcyNjYgICBjLTAuMjkyOTY4OCwwLjI5Mjk2ODgtMC4yOTI5Njg4LDAuNzY3NTc4MSwwLDEuMDYwNTQ2OUM4LjAzMTI1LDIwLjQyNjc1NzgsOC4yMjI2NTYzLDIwLjUsOC40MTUwMzkxLDIwLjUgICBjMC4xOTE0MDYzLDAsMC4zODM3ODkxLTAuMDczMjQyMiwwLjUzMDI3MzQtMC4yMTk3MjY2QzEwLjg5MjU3ODEsMTguMzMzOTg0NCwxMS45NjQ4NDM4LDE1Ljc0ODA0NjksMTEuOTY0ODQzOCwxMyAgIGMwLTIuNzQ5MDIzNC0xLjA3MjI2NTYtNS4zMzQ5NjA5LTMuMDE5NTMxMy03LjI4MDI3MzRDOC42NTEzNjcyLDUuNDI1NzgxMyw4LjE3Njc1NzgsNS40Mjc3MzQ0LDcuODg0NzY1Niw1LjcxOTcyNjZ6IiBmaWxsPSIjMUQxRDFCIi8+PHBhdGggZD0iTTMuMzgxODM1OSw3Ljk2OTcyNjZjLTAuMjkyOTY4OCwwLjI5Mjk2ODgtMC4yOTI5Njg4LDAuNzY3NTc4MSwwLDEuMDYwNTQ2OSAgIEM0LjQ0NDMzNTksMTAuMDkxNzk2OSw1LjAyOTI5NjksMTEuNTAxOTUzMSw1LjAyOTI5NjksMTNzLTAuNTg0OTYwOSwyLjkwODIwMzEtMS42NDc0NjA5LDMuOTY5NzI2NiAgIGMtMC4yOTI5Njg4LDAuMjkyOTY4OC0wLjI5Mjk2ODgsMC43Njc1NzgxLDAsMS4wNjA1NDY5QzMuNTI4MzIwMywxOC4xNzY3NTc4LDMuNzE5NzI2NiwxOC4yNSwzLjkxMjEwOTQsMTguMjUgICBjMC4xOTE0MDYzLDAsMC4zODM3ODkxLTAuMDczMjQyMiwwLjUzMDI3MzQtMC4yMTk3MjY2QzUuNzg4MDg1OSwxNi42ODU1NDY5LDYuNTI5Mjk2OSwxNC44OTk0MTQxLDYuNTI5Mjk2OSwxMyAgIFM1Ljc4ODA4NTksOS4zMTQ0NTMxLDQuNDQyMzgyOCw3Ljk2OTcyNjZDNC4xNDg0Mzc1LDcuNjc1NzgxMywzLjY3MzgyODEsNy42Nzc3MzQ0LDMuMzgxODM1OSw3Ljk2OTcyNjZ6IiBmaWxsPSIjMUQxRDFCIi8+PHBhdGggZD0iTTE3Ljk1MTE3MTksMS4yMTk3MjY2Yy0wLjI5Mzk0NTMtMC4yOTM5NDUzLTAuNzY4NTU0Ny0wLjI5MTk5MjItMS4wNjA1NDY5LDAgICBjLTAuMjkyOTY4OCwwLjI5Mjk2ODgtMC4yOTI5Njg4LDAuNzY3NTc4MSwwLDEuMDYwNTQ2OUMxOS43NTc4MTI1LDUuMTQ2NDg0NCwyMS4zMzY5MTQxLDguOTUzMTI1LDIxLjMzNjkxNDEsMTMgICBzLTEuNTc5MTAxNiw3Ljg1MzUxNTYtNC40NDYyODkxLDEwLjcxOTcyNjZjLTAuMjkyOTY4OCwwLjI5Mjk2ODgtMC4yOTI5Njg4LDAuNzY3NTc4MSwwLDEuMDYwNTQ2OSAgIEMxNy4wMzcxMDk0LDI0LjkyNjc1NzgsMTcuMjI4NTE1NiwyNSwxNy40MjA4OTg0LDI1YzAuMTkxNDA2MywwLDAuMzgzNzg5MS0wLjA3MzI0MjIsMC41MzAyNzM0LTAuMjE5NzI2NiAgIEMyMS4xMDE1NjI1LDIxLjYzMDg1OTQsMjIuODM2OTE0MSwxNy40NDcyNjU2LDIyLjgzNjkxNDEsMTNDMjIuODM2OTE0MSw4LjU1MTc1NzgsMjEuMTAxNTYyNSw0LjM2ODE2NDEsMTcuOTUxMTcxOSwxLjIxOTcyNjZ6IiBmaWxsPSIjMUQxRDFCIi8+PC9nPjwvc3ZnPg==" />
+    <span class="action__item__arrow"></span>
+  </div>
+  <div id="swipeCard" class="action__item swipe-card">
+    <img class="action__item__img"
+      src="data:image/svg+xml;base64,PHN2ZyBpZD0iQ2FwYV8xIiBlbmFibGUtYmFja2dyb3VuZD0ibmV3IDAgMCA1MTIgNTEyIiBoZWlnaHQ9IjUxMiIgdmlld0JveD0iMCAwIDUxMiA1MTIiIHdpZHRoPSI1MTIiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGcgaWQ9IlhNTElEXzEwMjRfIj48ZyBpZD0iWE1MSURfNDUzXyI+PHBhdGggaWQ9IlhNTElEXzQ3Nl8iIGQ9Im00NzAgNzZoLTEwNi44ODFsLTU1LjQyNy00Mi43MzljLTE0LjEyNS0xMC44OTMtMzEuNzI4LTE2Ljg5MS00OS41NjYtMTYuODkxaC0xNTAuMTI2di02LjM3YzAtNS41MjMtNC40NzctMTAtMTAtMTBoLTg4Yy01LjUyMyAwLTEwIDQuNDc3LTEwIDEwdjE2OGMwIDUuNTIzIDQuNDc3IDEwIDEwIDEwaDg4YzUuNTIzIDAgMTAtNC40NzcgMTAtMTB2LTYuOTFoMTQuMjcxYzUuODUgMi43MjQgMTEuNzY1IDUuMjU5IDE3LjcyOSA3LjY0NXYxMTkuMjY1YzAgMjMuMTU5IDE4Ljg0MSA0MiA0MiA0Mmg5OWM1LjUyMyAwIDEwLTQuNDc4IDEwLTEwcy00LjQ3Ny0xMC0xMC0xMGgtOTljLTEyLjEzMSAwLTIyLTkuODY5LTIyLTIydi0yLjA0MmgzMzJ2Mi4wNDJjMCAxMi4xMzEtOS44NjkgMjItMjIgMjJoLTk5Yy01LjUyMyAwLTEwIDQuNDc4LTEwIDEwczQuNDc3IDEwIDEwIDEwaDk5YzIzLjE1OSAwIDQyLTE4Ljg0MSA0Mi00MnYtMTgwYzAtMjMuMTU5LTE4Ljg0MS00Mi00Mi00MnptLTM4MiA5MmgtNjh2LTE0OGg2OHptMzYuNTAyLTE2LjkxaC0xNi41MDJ2LTExNC43MmgxNTAuMTI2YzEzLjQ0MyAwIDI2LjcwOCA0LjUyMSAzNy4zNTQgMTIuNzI5bDM0Ljg4NyAyNi45MDFoLTkwLjczNWMtMTguMTU0IDAtMzIuOTIzIDE0Ljc3LTMyLjkyMyAzMi45MjMgMCAxMi4wMDYgNi41NTMgMjMuMDI1IDE3LjEwMiAyOC43NThsNDEuNjMzIDIyLjYyN2M1LjQ1MiAyLjk2MyA3LjkxOSA5LjU3NyA1Ljc0IDE1LjM4Ni0xLjk1NCA1LjIwOS03LjE4NiA4LjUzMi0xMi43MzcgOC4wNzZsLTE2LjQzLTEuMzQ4Yy0zOS40MDQtMy4yMzItNzcuNTAxLTEzLjQ1MS0xMTMuMjM0LTMwLjM3MS0xLjMzOS0uNjMyLTIuODAxLS45NjEtNC4yODEtLjk2MXptMTE1Ljg4IDUxLjI2NiAxNi40MyAxLjM0OGMuODgyLjA3MyAxLjc2LjEwOCAyLjYzNC4xMDggMTMuNDA5LS4wMDEgMjUuNjk4LTguMzg0IDMwLjQ2NS0yMS4wOTQgNS42NjItMTUuMDk1LS43NTEtMzIuMjgzLTE0LjkxNi0zOS45ODJsLTQxLjYzNC0yMi42MjdjLTQuMTAzLTIuMjMtNi42NTItNi41MTYtNi42NTItMTEuMTg2IDAtNy4xMjYgNS43OTctMTIuOTIzIDEyLjkyMy0xMi45MjNoMjMwLjM2OGMxMi4xMzEgMCAyMiA5Ljg2OSAyMiAyMnYxMTMuOTU4aC0zMzJ2LTQ1LjkyMmMyNS45ODMgOC41ODUgNTIuODggMTQuMDY0IDgwLjM4MiAxNi4zMnptLTgwLjM4MiA3My42MDJ2LTI0aDMzMnYyNHoiLz48cGF0aCBpZD0iWE1MSURfMTM4NV8iIGQ9Im00MjAgNDE4aC0zMjhjLTIwLjk1MyAwLTM4IDE3LjA0Ny0zOCAzOHY0NmMwIDUuNTIyIDQuNDc3IDEwIDEwIDEwaDM4NGM1LjUyMyAwIDEwLTQuNDc4IDEwLTEwdi00NmMwLTIwLjk1My0xNy4wNDctMzgtMzgtMzh6bTE4IDc0aC0zNjR2LTM2YzAtOS45MjUgOC4wNzUtMTggMTgtMThoMzI4YzkuOTI1IDAgMTggOC4wNzUgMTggMTh6Ii8+PHBhdGggaWQ9IlhNTElEXzE0MDVfIiBkPSJtMzMzLjA3IDMzNy4wNjljMS44Ni0xLjg1OSAyLjkzLTQuNDM5IDIuOTMtNy4wNjlzLTEuMDctNS4yMS0yLjkzLTcuMDctNC40NC0yLjkzLTcuMDctMi45My01LjIxIDEuMDY5LTcuMDcgMi45M2MtMS44NiAxLjg2LTIuOTMgNC40NC0yLjkzIDcuMDdzMS4wNyA1LjIxIDIuOTMgNy4wNjljMS44NiAxLjg2IDQuNDQgMi45MzEgNy4wNyAyLjkzMXM1LjIxLTEuMDcgNy4wNy0yLjkzMXoiLz48L2c+PC9nPjwvc3ZnPg==" />
+    <span class="action__item__arrow"></span>
+  </div>
+  <div id="scanApp" class="action__item scan-app">
+    <img class="action__item__img"
+      src="data:image/svg+xml;base64,PHN2ZyBoZWlnaHQ9IjQ5NnB0IiB2aWV3Qm94PSItOTYgMCA0OTYgNDk2IiB3aWR0aD0iNDk2cHQiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHBhdGggZD0ibTk2IDE2OHY0OGMwIDQuNDI1NzgxIDMuNTg1OTM4IDggOCA4aDQ4YzQuNDE0MDYyIDAgOC0zLjU3NDIxOSA4LTh2LTQ4YzAtNC40MjU3ODEtMy41ODU5MzgtOC04LThoLTQ4Yy00LjQxNDA2MiAwLTggMy41NzQyMTktOCA4em0xNiA4aDMydjMyaC0zMnptMCAwIi8+PHBhdGggZD0ibTI3MiAxNjhjMC00LjQyNTc4MS0zLjU4NTkzOC04LTgtOGgtNDhjLTQuNDE0MDYyIDAtOCAzLjU3NDIxOS04IDh2NDhjMCA0LjQyNTc4MSAzLjU4NTkzOCA4IDggOGg0OGM0LjQxNDA2MiAwIDgtMy41NzQyMTkgOC04em0tMTYgNDBoLTMydi0zMmgzMnptMCAwIi8+PHBhdGggZD0ibTE2MCAzMjh2LTQ4YzAtNC40MjU3ODEtMy41ODU5MzgtOC04LThoLTQ4Yy00LjQxNDA2MiAwLTggMy41NzQyMTktOCA4djQ4YzAgNC40MjU3ODEgMy41ODU5MzggOCA4IDhoNDhjNC40MTQwNjIgMCA4LTMuNTc0MjE5IDgtOHptLTE2LThoLTMydi0zMmgzMnptMCAwIi8+PHBhdGggZD0ibTI3MiAyNDBoLTgwdi04MGgtMTZ2ODBoLTgwdjE2aDgwdjgwaDE2di04MGg4MHptMCAwIi8+PHBhdGggZD0ibTI3MiAyNzJoLTU2Yy00LjQxNDA2MiAwLTggMy41NzQyMTktOCA4djU2aDE2di00OGg0OHptMCAwIi8+PHBhdGggZD0ibTI0MCAyOTZoMTZ2NDBoLTE2em0wIDAiLz48cGF0aCBkPSJtMzA0IDE5MnYtNTZjMC00LjQyNTc4MS0zLjU4NTkzOC04LTgtOGgtMjR2LTg4YzAtMjIuMDU0Njg4LTE3Ljk0NTMxMi00MC00MC00MGgtMTkyYy0yMi4wNTQ2ODggMC00MCAxNy45NDUzMTItNDAgNDB2NDE2YzAgMjIuMDU0Njg4IDE3Ljk0NTMxMiA0MCA0MCA0MGgxOTJjMjIuMDU0Njg4IDAgNDAtMTcuOTQ1MzEyIDQwLTQwdi04OGgyNGM0LjQxNDA2MiAwIDgtMy41NzQyMTkgOC04di01NmgtMTZ2NDhoLTQ4djE2aDE2djg4YzAgMTMuMjMwNDY5LTEwLjc2OTUzMSAyNC0yNCAyNGgtOHYtOGMwLTEzLjIzMDQ2OS0xMC43Njk1MzEtMjQtMjQtMjRoLTEyOGMtMTMuMjMwNDY5IDAtMjQgMTAuNzY5NTMxLTI0IDI0djhoLThjLTEzLjIzMDQ2OSAwLTI0LTEwLjc2OTUzMS0yNC0yNHYtNDE2YzAtOS45MDIzNDQgNi4wMzEyNS0xOC40MTQwNjIgMTQuNjA5Mzc1LTIyLjA3ODEyNWw0My43MzQzNzUgNDMuNzM0Mzc1YzEuNDk2MDk0IDEuNTAzOTA2IDMuNTM1MTU2IDIuMzQzNzUgNS42NTYyNSAyLjM0Mzc1aDExMmMyLjEyMTA5NCAwIDQuMTYwMTU2LS44Mzk4NDQgNS42NTYyNS0yLjM0Mzc1bDQzLjczNDM3NS00My43MzQzNzVjOC41NzgxMjUgMy42NjQwNjMgMTQuNjA5Mzc1IDEyLjE3NTc4MSAxNC42MDkzNzUgMjIuMDc4MTI1djg4aC0xNnYxNmg0OHY0OHptLTI0MCAyODBjMC00LjQxNDA2MiAzLjU5Mzc1LTggOC04aDEyOGM0LjQwNjI1IDAgOCAzLjU4NTkzOCA4IDh2OGgtMTQ0em0xMjQuNjg3NS00MjRoLTEwNS4zNzVsLTMyLTMyaDE2OS4zNzV6bTAgMCIvPjxwYXRoIGQ9Im02NCAxMzZ2NTZoMTZ2LTQ4aDQ4di0xNmgtNTZjLTQuNDE0MDYyIDAtOCAzLjU3NDIxOS04IDh6bTAgMCIvPjxwYXRoIGQ9Im02NCAzNjBjMCA0LjQyNTc4MSAzLjU4NTkzOCA4IDggOGg1NnYtMTZoLTQ4di00OGgtMTZ6bTAgMCIvPjwvc3ZnPg==" />
+    <span class="action__item__arrow"></span>
+  </div>
+  <!-- Help Screen -->
+  <div class="help" id="helpScreen">
+    <div class="backFromHelp" id="backFromHelp" onClick="btnBackHomeFromHelp()"></div>
+      <div>
+        <h2 class="h2-help" id="chargeTitle"></h2>
+            <div class="list-item-help">
+              <span id="chargeItem1"></span>
+              <div>
+                <img class="ilustracion--1" src="assets/insertCoin.png"/>
+                <img class="ilustracion--2" src="assets/insertBill.png"/>
+                <img class="ilustracion--3" src="assets/insertBill.png"/>
+              </div>
+            </div>
+          <div class="list-item-help">
+            <span id="chargeItem2"></span>
+            <img class="swipeCard-help"
+            src="data:image/svg+xml;base64,PHN2ZyBpZD0iQ2FwYV8xIiBlbmFibGUtYmFja2dyb3VuZD0ibmV3IDAgMCA1MTIgNTEyIiBoZWlnaHQ9IjUxMiIgdmlld0JveD0iMCAwIDUxMiA1MTIiIHdpZHRoPSI1MTIiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGcgaWQ9IlhNTElEXzEwMjRfIj48ZyBpZD0iWE1MSURfNDUzXyI+PHBhdGggaWQ9IlhNTElEXzQ3Nl8iIGQ9Im00NzAgNzZoLTEwNi44ODFsLTU1LjQyNy00Mi43MzljLTE0LjEyNS0xMC44OTMtMzEuNzI4LTE2Ljg5MS00OS41NjYtMTYuODkxaC0xNTAuMTI2di02LjM3YzAtNS41MjMtNC40NzctMTAtMTAtMTBoLTg4Yy01LjUyMyAwLTEwIDQuNDc3LTEwIDEwdjE2OGMwIDUuNTIzIDQuNDc3IDEwIDEwIDEwaDg4YzUuNTIzIDAgMTAtNC40NzcgMTAtMTB2LTYuOTFoMTQuMjcxYzUuODUgMi43MjQgMTEuNzY1IDUuMjU5IDE3LjcyOSA3LjY0NXYxMTkuMjY1YzAgMjMuMTU5IDE4Ljg0MSA0MiA0MiA0Mmg5OWM1LjUyMyAwIDEwLTQuNDc4IDEwLTEwcy00LjQ3Ny0xMC0xMC0xMGgtOTljLTEyLjEzMSAwLTIyLTkuODY5LTIyLTIydi0yLjA0MmgzMzJ2Mi4wNDJjMCAxMi4xMzEtOS44NjkgMjItMjIgMjJoLTk5Yy01LjUyMyAwLTEwIDQuNDc4LTEwIDEwczQuNDc3IDEwIDEwIDEwaDk5YzIzLjE1OSAwIDQyLTE4Ljg0MSA0Mi00MnYtMTgwYzAtMjMuMTU5LTE4Ljg0MS00Mi00Mi00MnptLTM4MiA5MmgtNjh2LTE0OGg2OHptMzYuNTAyLTE2LjkxaC0xNi41MDJ2LTExNC43MmgxNTAuMTI2YzEzLjQ0MyAwIDI2LjcwOCA0LjUyMSAzNy4zNTQgMTIuNzI5bDM0Ljg4NyAyNi45MDFoLTkwLjczNWMtMTguMTU0IDAtMzIuOTIzIDE0Ljc3LTMyLjkyMyAzMi45MjMgMCAxMi4wMDYgNi41NTMgMjMuMDI1IDE3LjEwMiAyOC43NThsNDEuNjMzIDIyLjYyN2M1LjQ1MiAyLjk2MyA3LjkxOSA5LjU3NyA1Ljc0IDE1LjM4Ni0xLjk1NCA1LjIwOS03LjE4NiA4LjUzMi0xMi43MzcgOC4wNzZsLTE2LjQzLTEuMzQ4Yy0zOS40MDQtMy4yMzItNzcuNTAxLTEzLjQ1MS0xMTMuMjM0LTMwLjM3MS0xLjMzOS0uNjMyLTIuODAxLS45NjEtNC4yODEtLjk2MXptMTE1Ljg4IDUxLjI2NiAxNi40MyAxLjM0OGMuODgyLjA3MyAxLjc2LjEwOCAyLjYzNC4xMDggMTMuNDA5LS4wMDEgMjUuNjk4LTguMzg0IDMwLjQ2NS0yMS4wOTQgNS42NjItMTUuMDk1LS43NTEtMzIuMjgzLTE0LjkxNi0zOS45ODJsLTQxLjYzNC0yMi42MjdjLTQuMTAzLTIuMjMtNi42NTItNi41MTYtNi42NTItMTEuMTg2IDAtNy4xMjYgNS43OTctMTIuOTIzIDEyLjkyMy0xMi45MjNoMjMwLjM2OGMxMi4xMzEgMCAyMiA5Ljg2OSAyMiAyMnYxMTMuOTU4aC0zMzJ2LTQ1LjkyMmMyNS45ODMgOC41ODUgNTIuODggMTQuMDY0IDgwLjM4MiAxNi4zMnptLTgwLjM4MiA3My42MDJ2LTI0aDMzMnYyNHoiLz48cGF0aCBpZD0iWE1MSURfMTM4NV8iIGQ9Im00MjAgNDE4aC0zMjhjLTIwLjk1MyAwLTM4IDE3LjA0Ny0zOCAzOHY0NmMwIDUuNTIyIDQuNDc3IDEwIDEwIDEwaDM4NGM1LjUyMyAwIDEwLTQuNDc4IDEwLTEwdi00NmMwLTIwLjk1My0xNy4wNDctMzgtMzgtMzh6bTE4IDc0aC0zNjR2LTM2YzAtOS45MjUgOC4wNzUtMTggMTgtMThoMzI4YzkuOTI1IDAgMTggOC4wNzUgMTggMTh6Ii8+PHBhdGggaWQ9IlhNTElEXzE0MDVfIiBkPSJtMzMzLjA3IDMzNy4wNjljMS44Ni0xLjg1OSAyLjkzLTQuNDM5IDIuOTMtNy4wNjlzLTEuMDctNS4yMS0yLjkzLTcuMDctNC40NC0yLjkzLTcuMDctMi45My01LjIxIDEuMDY5LTcuMDcgMi45M2MtMS44NiAxLjg2LTIuOTMgNC40NC0yLjkzIDcuMDdzMS4wNyA1LjIxIDIuOTMgNy4wNjljMS44NiAxLjg2IDQuNDQgMi45MzEgNy4wNyAyLjkzMXM1LjIxLTEuMDcgNy4wNy0yLjkzMXoiLz48L2c+PC9nPjwvc3ZnPg==" />
+          </div>
+          <div class="list-item-help">
+            <span id="chargeItem3"></span>
+            <a id="new-card" class="new-card-help">
+              <span id="newCardHelpScreen"></span>
+            </a>
+          </div>
+        </ol>
+      </div>
+    <div>
+      <h2 class="h2-help" id="consultaSaldoTitle"></h2>
+        <div class="list-item-help">
+          <span id="consultaSaldoItem1"></span>
+          <img class="swipeCard-help"
+          src="data:image/svg+xml;base64,PHN2ZyBpZD0iQ2FwYV8xIiBlbmFibGUtYmFja2dyb3VuZD0ibmV3IDAgMCA1MTIgNTEyIiBoZWlnaHQ9IjUxMiIgdmlld0JveD0iMCAwIDUxMiA1MTIiIHdpZHRoPSI1MTIiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGcgaWQ9IlhNTElEXzEwMjRfIj48ZyBpZD0iWE1MSURfNDUzXyI+PHBhdGggaWQ9IlhNTElEXzQ3Nl8iIGQ9Im00NzAgNzZoLTEwNi44ODFsLTU1LjQyNy00Mi43MzljLTE0LjEyNS0xMC44OTMtMzEuNzI4LTE2Ljg5MS00OS41NjYtMTYuODkxaC0xNTAuMTI2di02LjM3YzAtNS41MjMtNC40NzctMTAtMTAtMTBoLTg4Yy01LjUyMyAwLTEwIDQuNDc3LTEwIDEwdjE2OGMwIDUuNTIzIDQuNDc3IDEwIDEwIDEwaDg4YzUuNTIzIDAgMTAtNC40NzcgMTAtMTB2LTYuOTFoMTQuMjcxYzUuODUgMi43MjQgMTEuNzY1IDUuMjU5IDE3LjcyOSA3LjY0NXYxMTkuMjY1YzAgMjMuMTU5IDE4Ljg0MSA0MiA0MiA0Mmg5OWM1LjUyMyAwIDEwLTQuNDc4IDEwLTEwcy00LjQ3Ny0xMC0xMC0xMGgtOTljLTEyLjEzMSAwLTIyLTkuODY5LTIyLTIydi0yLjA0MmgzMzJ2Mi4wNDJjMCAxMi4xMzEtOS44NjkgMjItMjIgMjJoLTk5Yy01LjUyMyAwLTEwIDQuNDc4LTEwIDEwczQuNDc3IDEwIDEwIDEwaDk5YzIzLjE1OSAwIDQyLTE4Ljg0MSA0Mi00MnYtMTgwYzAtMjMuMTU5LTE4Ljg0MS00Mi00Mi00MnptLTM4MiA5MmgtNjh2LTE0OGg2OHptMzYuNTAyLTE2LjkxaC0xNi41MDJ2LTExNC43MmgxNTAuMTI2YzEzLjQ0MyAwIDI2LjcwOCA0LjUyMSAzNy4zNTQgMTIuNzI5bDM0Ljg4NyAyNi45MDFoLTkwLjczNWMtMTguMTU0IDAtMzIuOTIzIDE0Ljc3LTMyLjkyMyAzMi45MjMgMCAxMi4wMDYgNi41NTMgMjMuMDI1IDE3LjEwMiAyOC43NThsNDEuNjMzIDIyLjYyN2M1LjQ1MiAyLjk2MyA3LjkxOSA5LjU3NyA1Ljc0IDE1LjM4Ni0xLjk1NCA1LjIwOS03LjE4NiA4LjUzMi0xMi43MzcgOC4wNzZsLTE2LjQzLTEuMzQ4Yy0zOS40MDQtMy4yMzItNzcuNTAxLTEzLjQ1MS0xMTMuMjM0LTMwLjM3MS0xLjMzOS0uNjMyLTIuODAxLS45NjEtNC4yODEtLjk2MXptMTE1Ljg4IDUxLjI2NiAxNi40MyAxLjM0OGMuODgyLjA3MyAxLjc2LjEwOCAyLjYzNC4xMDggMTMuNDA5LS4wMDEgMjUuNjk4LTguMzg0IDMwLjQ2NS0yMS4wOTQgNS42NjItMTUuMDk1LS43NTEtMzIuMjgzLTE0LjkxNi0zOS45ODJsLTQxLjYzNC0yMi42MjdjLTQuMTAzLTIuMjMtNi42NTItNi41MTYtNi42NTItMTEuMTg2IDAtNy4xMjYgNS43OTctMTIuOTIzIDEyLjkyMy0xMi45MjNoMjMwLjM2OGMxMi4xMzEgMCAyMiA5Ljg2OSAyMiAyMnYxMTMuOTU4aC0zMzJ2LTQ1LjkyMmMyNS45ODMgOC41ODUgNTIuODggMTQuMDY0IDgwLjM4MiAxNi4zMnptLTgwLjM4MiA3My42MDJ2LTI0aDMzMnYyNHoiLz48cGF0aCBpZD0iWE1MSURfMTM4NV8iIGQ9Im00MjAgNDE4aC0zMjhjLTIwLjk1MyAwLTM4IDE3LjA0Ny0zOCAzOHY0NmMwIDUuNTIyIDQuNDc3IDEwIDEwIDEwaDM4NGM1LjUyMyAwIDEwLTQuNDc4IDEwLTEwdi00NmMwLTIwLjk1My0xNy4wNDctMzgtMzgtMzh6bTE4IDc0aC0zNjR2LTM2YzAtOS45MjUgOC4wNzUtMTggMTgtMThoMzI4YzkuOTI1IDAgMTggOC4wNzUgMTggMTh6Ii8+PHBhdGggaWQ9IlhNTElEXzE0MDVfIiBkPSJtMzMzLjA3IDMzNy4wNjljMS44Ni0xLjg1OSAyLjkzLTQuNDM5IDIuOTMtNy4wNjlzLTEuMDctNS4yMS0yLjkzLTcuMDctNC40NC0yLjkzLTcuMDctMi45My01LjIxIDEuMDY5LTcuMDcgMi45M2MtMS44NiAxLjg2LTIuOTMgNC40NC0yLjkzIDcuMDdzMS4wNyA1LjIxIDIuOTMgNy4wNjljMS44NiAxLjg2IDQuNDQgMi45MzEgNy4wNyAyLjkzMXM1LjIxLTEuMDcgNy4wNy0yLjkzMXoiLz48L2c+PC9nPjwvc3ZnPg==" />
+        </div>
+<!--         <div class="list-item-help">
+          <span id="consultaSaldoItem2"></span>
+          <span id="consultaSaldoHelp"></span>
+        </div> -->
+    </div>
+    <div class="company-logo-help"></div>
+  </div>
+  <!-- Pantalla Fuera de Servicio -->
+  <div id="outOfService">
+    <h1 id="outOfOrderTitle"></h1>
+      <p id="outOfOrderMessage"></p>
+  </div>
+  <!-- MODAL Recargar Tarjeta-->
+  <div class="modal-overlay" id="modal">
+    <div class="modal-tarjeta">
+      <p class="modal-tarjeta__title" id="modalTitle"></p>
+      <p class="modal-tarjeta__subtitle" id="modalText"></p>
+      <button class="modal-tarjeta__btn" id="btnModal" onClick="closeModal()"></button>
+    </div>
+  </div>
+  <!-- Montos para seleccionar-->
+  <button id="value1" class="value__item item1" onClick="onValueSelected(id)">
+  </button>
+
+  <button id="value2" class="value__item item2" onClick="onValueSelected(id)">
+    <small id="valueSimbolo2"></small>
+    <span id="valueMonto2"></span>
+  </button>
+
+  <button id="value3" class="value__item item3" onClick="onValueSelected(id)">
+    <small id="valueSimbolo3"></small>
+    <span id="valueMonto3"></span>
+  </button>
+
+  <button id="value4" class="value__item item4" onClick="onValueSelected(id)">
+    <small id="valueSimbolo4"></small>
+    <span id="valueMonto4"></span>
+  </button>
+
+  <button id="valuePersonalizado" class="value__item itemPersonalizado" onClick="onValueSelected(id)">
+    <span id="valueSaldoPersonalizado"></span>
+  </button>
+  <div class="back-btn-charge" id="btnVolver" onClick="backHome()">Volver</div>
+  <!-- SCREEN MONTO SELECCIONADO-->
+  <div class="value__item itemSelected" id="itemSelected">
+    <small id="valueSimboloSelected"></small>
+    <span id="valueMontoSelected"></span>
+  </div>
+  <div class="posnet-illustration" id="posnetIlustration">
+    <div class="arrows-top">
+      <img src="assets/arrow-darkgrey.png">
+      <img src="assets/arrow-grey.png">
+      <img src="assets/arrow-white.png">
+    </div>
+    <img class="posnet-img" src="assets/posnet.png" />
+    <div class="arrows-bottom">
+      <img src="assets/arrow-darkgrey.png">
+      <img src="assets/arrow-grey.png">
+      <img src="assets/arrow-white.png">
+    </div>
+  </div>
+  <div class="posnet-container" id="posnetPersonalizado">
+    <div class="simbolo-display" id="divisaDisplay"></div>
+    <div class="display" id="displayValue">$</div>
+    <div class="posnet-row">
+      <button class="item" onclick="mostrarValor('displayValue' , '1' )">1</button>
+      <button class="item" onclick="mostrarValor('displayValue' , '2' )">2</button>
+      <button class="item" onclick="mostrarValor('displayValue' , '3' )">3</button>
+    </div>
+    <div class="posnet-row">
+      <button class="item" onclick="mostrarValor('displayValue' , '4' )">4</button>
+      <button class="item" onclick="mostrarValor('displayValue' , '5' )">5</button>
+      <button class="item" onclick="mostrarValor('displayValue' , '6' )">6</button>
+    </div>
+    <div class="posnet-row">
+      <button class="item" onclick="mostrarValor('displayValue' , '7' )">7</button>
+      <button class="item" onclick="mostrarValor('displayValue' , '8' )">8</button>
+      <button class="item" onclick="mostrarValor('displayValue' , '9' )">9</button>
+    </div>
+    <div class="posnet-row">
+      <button class="item-delete item11" onclick="eliminarValor()">&larr;</button>
+      <button class="item item11" onclick="mostrarValor('displayValue' , '0' )">0</button>
+      <button class="item item11" onclick="mostrarValor('displayValue' , '.' )">.</button>
+    </div>
+  </div>
+  <div class="rejectedScreen" id="rejectedScreen">
+      <div class="rejected__title">Busque su saldo<br>en la aplicación</div>
+      <div class="rejected__img"></div>
+  </div>
+  <a class="confirm-btn" id="confirmBtn" onClick="confirmBtnActivated()"></a>
+  <script src="language.js" type="text/javascript"></script>
+  <script src="index.js" type="text/javascript"></script>
+</body>
+</html>
